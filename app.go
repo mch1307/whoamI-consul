@@ -20,7 +20,7 @@ import (
 	"github.com/mch1307/whoamI/svc"
 )
 
-const service = "whoamiAutoRegistered"
+const service = "whoamI-SelfRegistered"
 
 var (
 	port                                                int
@@ -58,10 +58,9 @@ func main() {
 		fmt.Printf("Encountered error registering a service with consul -> %s\n", err)
 	}
 
-	fmt.Println("Starting up on port " + strconv.Itoa(port))
-
-	// start http server as goroutine for managing exit
+	// start http server as goroutine for managing exit cleanup
 	go http.ListenAndServe(":"+strconv.Itoa(port), nil)
+	fmt.Println("Starting up on port " + strconv.Itoa(port))
 
 	// create channel for post exit cleanup
 	signalChan := make(chan os.Signal, 1)
@@ -119,15 +118,13 @@ func whoamI(w http.ResponseWriter, req *http.Request) {
 			time.Sleep(duration)
 		}
 	}
-	//fmt.Fprintln(w, "############### whoamI demo ###############")
 	myFigure := figure.NewFigure(banner, "", true)
-	//myFigure.Slicify()
 	for _, banner := range myFigure.Slicify() {
 		fmt.Fprintln(w, banner)
 	}
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "Request served by host:", hostname)
-	ifaces, _ := net.Interfaces() //  Interfaces()
+	ifaces, _ := net.Interfaces()
 	for _, i := range ifaces {
 		addrs, _ := i.Addrs()
 		// handle err
@@ -143,7 +140,6 @@ func whoamI(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 	//req.Write(w)
-	//fmt.Fprintln(w, "###########################################")
 }
 
 func api(w http.ResponseWriter, req *http.Request) {

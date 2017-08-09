@@ -20,5 +20,5 @@ Added:
 -port int
         Port number for HTTP listen (default 80)
 -banner string
-        Banner displayed on web page
+        Banner displayed on web page (default whoamI)
 ```
