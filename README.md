@@ -1,6 +1,6 @@
-# whoamI
+# whoamI-consul
 
-Tiny Go webserver that displays host IP information (for demo purpose)
+Tiny Go webserver that displays host IP information
 
 Forked from emilevauge/whoamI.
 
