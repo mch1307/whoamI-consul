@@ -5,9 +5,9 @@ Tiny Go webserver that displays host IP information (for demo purpose)
 Forked from emilevauge/whoamI.
 
 Added: 
-- register/unregister itself to/from Consul service catalog (for Traefik/Consul demo)
-- cmd flags for Consul connection
-- optional banner to be displayed in aasci art on the web page
+ - register/unregister itself to/from Consul service catalog (for Traefik/Consul demo)
+ - cmd flags for Consul connection
+ - optional banner to be displayed in aasci art on the web page
 
 
 ```Usage: whoamI
