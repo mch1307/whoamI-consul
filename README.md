@@ -1,7 +1,7 @@
 # whoamI
 
 Forked from emilevauge/whoamI
-Tiny Go webserver that prints os information and HTTP request to output
+Tiny Go webserver that displays host IP information
 Added: Register/Deregister itself to Consul service catalog (for Traefik/Consul demo)
 
 ```Usage: whoamI
@@ -13,4 +13,6 @@ Added: Register/Deregister itself to Consul service catalog (for Traefik/Consul 
         Consul ACL token (optional)
   -port int
         Port number for HTTP listen (default 80)
+  -banner string
+        Banner displayed on web page
 ```
