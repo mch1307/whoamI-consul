@@ -17,7 +17,7 @@ import (
 
 	"github.com/common-nighthawk/go-figure"
 	"github.com/gorilla/websocket"
-	"github.com/mch1307/whoamI/svc"
+	"github.com/mch1307/whoamI-consul/svc"
 )
 
 const service = "whoamI-SelfRegistered"
