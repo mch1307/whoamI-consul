@@ -15,25 +15,25 @@ import (
 	"os"
 	"time"
 
-	"github.com/common-nighthawk/go-figure"
+	figure "github.com/common-nighthawk/go-figure"
 	"github.com/gorilla/websocket"
-	"github.com/mch1307/whoamI-consul/svc"
+	svc "sgithub.sgbt.lu/champam1/whoamI-consul/svc"
 )
 
 const service = "whoamI-SelfRegistered"
 
 var (
-	port                                                int
-	hostip, consulAddr, consulPort, consulToken, banner string
-	hostname, _                                         = os.Hostname()
+	port, consulPort                                       int
+	hostip, consulAddr, consulToken, kvPath, consulPortStr string
+	hostname, _                                            = os.Hostname()
 )
 
 func init() {
-	flag.IntVar(&port, "port", 80, "Port number for HTTP listen")
+	flag.IntVar(&port, "port", 8080, "Port number for HTTP listen")
 	flag.StringVar(&consulAddr, "consul", "", "Consul service catalog address")
-	flag.StringVar(&consulPort, "consulPort", "8500", "Consul service catalog port")
+	flag.IntVar(&consulPort, "consulPort", 8500, "Consul service catalog port")
 	flag.StringVar(&consulToken, "consulToken", "", "Consul ACL token (optional)")
-	flag.StringVar(&banner, "banner", "whoamI", "Banner displayed on web page")
+	flag.StringVar(&kvPath, "kvPath", "PUBLIC/whoamI", "Consul KV path for banner (optional)")
 }
 
 var upgrader = websocket.Upgrader{
@@ -44,21 +44,21 @@ var upgrader = websocket.Upgrader{
 func main() {
 	// defer profile.Start().Stop()
 	flag.Parse()
+	consulPortStr = strconv.Itoa(consulPort)
 	http.HandleFunc("/echo", echoHandler)
 	http.HandleFunc("/bench", benchHandler)
 	http.HandleFunc("/", whoamI)
 	http.HandleFunc("/api", api)
 	http.HandleFunc("/health", healthHandler)
 	// create new Consul client instance
-	consulCli := svc.NewClient(consulAddr, consulPort, consulToken)
+	consulCli, err := svc.NewClient(consulAddr, consulPortStr, consulToken)
 
 	// Register the service to Consul catalog
-	err := svc.RegisterService(consulCli.Agent(), service, hostname, "http", port)
+	err = svc.RegisterService(consulCli.Agent(), service, hostname, "http", port)
 	if err != nil {
 		fmt.Printf("Encountered error registering a service with consul -> %s\n", err)
 	}
 
-	// start http server as goroutine for managing exit cleanup
 	go http.ListenAndServe(":"+strconv.Itoa(port), nil)
 	fmt.Println("Starting up on port " + strconv.Itoa(port))
 
@@ -84,10 +84,9 @@ func printBinary(s []byte) {
 	fmt.Printf("\n")
 }
 func benchHandler(w http.ResponseWriter, r *http.Request) {
-	// body := "Hello World\n"
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("Content-Type", "text/plain")
-	// fmt.Fprint(w, body)
+
 }
 func echoHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -118,9 +117,21 @@ func whoamI(w http.ResponseWriter, req *http.Request) {
 			time.Sleep(duration)
 		}
 	}
-	myFigure := figure.NewFigure(banner, "", true)
-	for _, banner := range myFigure.Slicify() {
-		fmt.Fprintln(w, banner)
+	// Get banner from Consul KV
+	consulCli, _ := svc.NewClient(consulAddr, consulPortStr, consulToken)
+
+	banner, err := svc.GetKV(consulCli, kvPath+"/banner")
+	if err != nil {
+		fmt.Println("Error getting banner from k/v", err)
+		banner = "not_found"
+	}
+	if banner == "not_found" {
+		banner = "whoamI"
+	}
+
+	myFigure := figure.NewFigure(banner, "", false)
+	for _, bannerDisplay := range myFigure.Slicify() {
+		fmt.Fprintln(w, bannerDisplay)
 	}
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "Request served by host:", hostname)
