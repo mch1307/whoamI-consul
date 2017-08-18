@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os/signal"
 	"strconv"
+	"strings"
 	"sync"
 
 	"log"
@@ -15,9 +16,9 @@ import (
 	"os"
 	"time"
 
-	figure "github.com/common-nighthawk/go-figure"
+	ascii "github.com/CrowdSurge/banner"
 	"github.com/gorilla/websocket"
-	svc "sgithub.sgbt.lu/champam1/whoamI-consul/svc"
+	svc "github.com/mch1307/whoamI-consul/svc"
 )
 
 const service = "whoamI-SelfRegistered"
@@ -128,11 +129,7 @@ func whoamI(w http.ResponseWriter, req *http.Request) {
 	if banner == "not_found" {
 		banner = "whoamI"
 	}
-
-	myFigure := figure.NewFigure(banner, "", false)
-	for _, bannerDisplay := range myFigure.Slicify() {
-		fmt.Fprintln(w, bannerDisplay)
-	}
+	fmt.Fprintln(w, ascii.PrintS(strings.ToLower(banner)))
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "Request served by host:", hostname)
 	ifaces, _ := net.Interfaces()
