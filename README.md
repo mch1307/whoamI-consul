@@ -4,6 +4,8 @@ Tiny Go webserver that displays host IP information
 
 Forked from emilevauge/whoamI.
 
+Story on http://wp.me/p95aLs-1c
+
 Added: 
  - register/unregister itself to/from Consul service catalog (for Traefik/Consul demo)
  - cmd flags for Consul connection
