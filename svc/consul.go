@@ -26,7 +26,7 @@ func RegisterService(ag *api.Agent, service, hostname, protocol string, port int
 	consulService := api.AgentServiceRegistration{
 		ID:      serviceID,
 		Name:    service,
-		Tags:    []string{service},
+		Tags:    []string{service, "traefik.frontend.rule=Host:" + service},
 		Port:    port,
 		Address: hostname,
 		Check: &api.AgentServiceCheck{
@@ -34,7 +34,7 @@ func RegisterService(ag *api.Agent, service, hostname, protocol string, port int
 			Interval: "10s",
 			Timeout:  "8s",
 			TTL:      "",
-			HTTP:     protocol + "://" + "172.30.16.47" + ":" + strconv.Itoa(port) + "/health",
+			HTTP:     protocol + "://" + hostname + ":" + strconv.Itoa(port) + "/health",
 			Status:   "passing",
 		},
 		Checks: api.AgentServiceChecks{},
