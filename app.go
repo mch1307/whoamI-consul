@@ -21,12 +21,12 @@ import (
 	svc "github.com/mch1307/whoamI-consul/svc"
 )
 
-const service = "whoamI-SelfRegistered"
+//const service = "whoamI"
 
 var (
-	port, consulPort                                       int
-	hostip, consulAddr, consulToken, kvPath, consulPortStr string
-	hostname, _                                            = os.Hostname()
+	port, consulPort                                                int
+	hostip, consulAddr, consulToken, kvPath, consulPortStr, service string
+	hostname, _                                                     = os.Hostname()
 )
 
 func init() {
@@ -35,6 +35,7 @@ func init() {
 	flag.IntVar(&consulPort, "consulPort", 8500, "Consul service catalog port")
 	flag.StringVar(&consulToken, "consulToken", "", "Consul ACL token (optional)")
 	flag.StringVar(&kvPath, "kvPath", "PUBLIC/whoamI", "Consul KV path for banner (optional)")
+	flag.StringVar(&service, "service", "whoamI", "Service name that will be registered (fqdn better)")
 }
 
 var upgrader = websocket.Upgrader{
@@ -67,6 +68,7 @@ func main() {
 	signalChan := make(chan os.Signal, 1)
 	cleanupDone := make(chan bool)
 	signal.Notify(signalChan, os.Interrupt)
+	signal.Notify(signalChan, os.Kill)
 	go func() {
 		for _ = range signalChan {
 			fmt.Println("Received interrupt, deregistering service...")
