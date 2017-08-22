@@ -12,7 +12,7 @@ Added:
  - ascii art banner displayed on the web page comes from consul k/v
 
 ```Usage: whoamI
- -consul string
+  -consul string
         Consul service catalog address
   -consulPort int
         Consul service catalog port (default 8500)
@@ -22,5 +22,7 @@ Added:
         Consul KV path for banner (optional) (default "PUBLIC/whoamI")
   -port int
         Port number for HTTP listen (default 8080)
+  -service string
+        Service name that will be registered (fqdn better) (default "whoamI")
 
 ```
